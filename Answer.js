@@ -1,14 +1,13 @@
 var $ = function (selector) {
 
   var elements = [];
-  var context = document;
-  var context_list = [context];
+  var contexts = [document];
   // split selector by spaces.
   // parse the strings for ids, tags, classes (that order)
-  // if ids. search doc for id, set that as context
-  // if tags. search context for tags, set these as new classes
-  // if classes search each context for class. set these as new context
-  // return context
+  // if ids. search doc for id, set that as elements
+  // if tags keep elements of that tag
+  // if classes keep elements of that class
+  // return elements
 
   // split by spaces for inheritance unnecessary
   // parse the strings for ids, tags, classes (that order)
@@ -17,24 +16,35 @@ var $ = function (selector) {
   tag_regex = /^(\w+)/;
   class_regex = /(?:\.([\w-]+))/;
 
-
+  // if ids. search doc for id, set that as context
   ids = id_regex.exec(selector)
   if (ids) {
     // chop out ids
     selector = selector.replace(ids[0], '')
     console.log("Id: " + ids[1])
-    context_list = [document.getElementById(ids[1])]
+    contexts = [document.getElementById(ids[1])]
   }
-  console.log(context_list)
+  console.log(contexts)
 
   tags = tag_regex.exec(selector)
   if (tags) {
     // chop out tags
     selector = selector.replace(tags[0], '')
     console.log("Tags: " + tags[1])
-    context_list = context.getElementsByTagName(tags[1])
+    if (contexts[0] == document) {
+      contexts = contexts[0].getElementsByTagName(tags[1])
+    } else {
+      to_keep = []
+      for (var i = 0; i < contexts.length; i++) {
+        console.log("tagname: " + contexts[i].tagName + "      expecting: " + tags[1].toUpperCase())
+        if (contexts[i].tagName == tags[1].toUpperCase()) {
+          to_keep.push(contexts[i]);
+        }
+      };
+      contexts = to_keep
+    }
   }
-  console.log(context_list)
+  console.log(contexts)
 
 
   classes = class_regex.exec(selector)
@@ -42,32 +52,24 @@ var $ = function (selector) {
     // chop out classes
     selector = selector.replace(classes[0], '')
     console.log("Classes: " + classes[1])
-
-    if (context_list[0] == document) {
-      return context_list[0].getElementsByClassName(classes[1])
+    if (contexts[0] == document) {
+      return contexts[0].getElementsByClassName(classes[1])
     } else {
       to_keep = []
-      console.log(context_list)
-      for (var i = 0; i < context_list.length; i++) {
-
-        var re = new RegExp("\\b" + classes[1]+ "\\b", "g");
-        if (context_list[i].className.search(re) !== -1) {
-          console.log('exists!!')
-          to_keep.push(context_list[0])
+      for (var i = 0; i < contexts.length; i++) {
+        // Regexp to check class name exists and is not a substring of a differennt class
+        var re = new RegExp("\\b" + classes[1] + "\\b", "g");
+        if (contexts[i].className.search(re) !== -1) {
+          console.log("classes: " + contexts[i].className + "      expecting: " + classes[1])
+          to_keep.push(contexts[i])
         }
       };
-      context_list = to_keep
+      contexts = to_keep
     }
-
   }
+  console.log(contexts)
 
-  console.log(context_list)
-
-
-  return context_list
+  return contexts
 
 
-
-
-}
-  
+} 

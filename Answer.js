@@ -1,96 +1,73 @@
 var $ = function (selector) {
-  ////////////////////
-  // Your code here //
-  ////////////////////
-  var contexts = [document];
+
   var elements = [];
-  console.log('\n\n')
+  var context = document;
+  var context_list = [context];
+  // split selector by spaces.
+  // parse the strings for ids, tags, classes (that order)
+  // if ids. search doc for id, set that as context
+  // if tags. search context for tags, set these as new classes
+  // if classes search each context for class. set these as new context
+  // return context
 
-  if ( !selector || typeof selector !== "string" ) {
-    return elements;
+  // split by spaces for inheritance unnecessary
+  // parse the strings for ids, tags, classes (that order)
+  console.log("\n\n--> " + selector)
+  id_regex = /(?:#([\w-]+))/;
+  tag_regex = /^(\w+)/;
+  class_regex = /(?:\.([\w-]+))/;
+
+
+  ids = id_regex.exec(selector)
+  if (ids) {
+    // chop out ids
+    selector = selector.replace(ids[0], '')
+    console.log("Id: " + ids[1])
+    context_list = [document.getElementById(ids[1])]
   }
-  console.log("selector: " + selector);
+  console.log(context_list)
 
-  var splitRegEx = /([.|:|#|\/[|\/]|])+/
-  var selectionArray = selector.split(splitRegEx)
-  console.log("selection array: " + selectionArray)
+  tags = tag_regex.exec(selector)
+  if (tags) {
+    // chop out tags
+    selector = selector.replace(tags[0], '')
+    console.log("Tags: " + tags[1])
+    context_list = context.getElementsByTagName(tags[1])
+  }
+  console.log(context_list)
 
-  var i = -1; 
-  while (i < selectionArray.length -1) {
 
-    currentSelector = selectionArray[++i];
+  classes = class_regex.exec(selector)
+  if (classes) {
+    // chop out classes
+    selector = selector.replace(classes[0], '')
+    console.log("Classes: " + classes[1])
 
-    if (currentSelector === "") {
-      continue;
-    } 
+    if (context_list[0] == document) {
+      return context_list[0].getElementsByClassName(classes[1])
+    } else {
+      to_keep = []
+      console.log(context_list)
+      for (var i = 0; i < context_list.length; i++) {
 
-    for (var context_index = 0; context_index < contexts.length; context_index++) {
-      context = contexts[context_index]
-
-      console.log("CONTEXT: " + context)
-      console.log("CONTEXT name: " + context.nodeName )
-      if (context.nodeName == "INPUT") {
-        console.log('BASTARD INPUT   ')
-        break;
-      }
-
-      if (currentSelector === ".") {
-        currentSelector = selectionArray[++i];
-        console.log('class: .'+ currentSelector)
-        console.log(context)
-        selections = context.getElementsByClassName(currentSelector)
-        console.log("SELECTIONS " + selections);
-        elements.push.apply(elements, selections);
-
-      } else if (currentSelector === "#") {
-        currentSelector = selectionArray[++i];
-        console.log('id: #'+ currentSelector)
-        console.log(context)
-
-        elements.push(context.getElementById(currentSelector));
-      } else {
-        console.log('tag: '+ currentSelector)
-        selections = context.getElementsByTagName(currentSelector)
-        // context = selections[selections.length-1];
-        contexts = selections;
-        elements.push.apply(elements, selections);
-      }
+        var re = new RegExp("\\b" + classes[1]+ "\\b", "g");
+        if (context_list[i].className.search(re) !== -1) {
+          console.log('exists!!')
+          to_keep.push(context_list[0])
+        }
+      };
+      context_list = to_keep
     }
-    console.log(elements)
+
   }
 
+  console.log(context_list)
 
 
-  // //regex to get different words (wahay there are none)
-  // // regex to separate out the tags, classes and ids  
-  //   // "ID": new RegExp( "^#(" + identifier + ")" )
-  // // Easily-parseable/retrievable ID or TAG or CLASS selectors
-  // regex = /^(?:#([\w-]+)|\.([\w-]+))|(\w+)$/
+  return context_list
 
-  // match = regex.exec(selector)
-  // console.log(match);
 
-  // if (id_name = match[1]){
-  //   console.log("Id: " + id_name)
-  //   elements.push(context.getElementById(id_name))
 
-  // }
-  // else if (class_name = match[2]){
-  //   console.log("Class: " + class_name)
-  //   elements.push.apply(elements, context.getElementsByClassName(class_name))
 
-  // } else if (tag_name = match[3]) {
-  //   console.log("Tag: " + tag_name)
-  //   elements.push.apply(elements, context.getElementsByTagName(tag_name))
-  // } 
-
-  console.log(elements)
-
-  // scrap
-  // elements = document.getElementsById('')
-  // (selector)
-
-  return elements;
 }
   
-  // https://github.com/jquery/sizzle/blob/master/src/sizzle.js

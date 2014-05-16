@@ -8,13 +8,18 @@ var $ = function (selector, context) {
   "use strict";
 
   context = context || document;
+  selector = selector.trim();
   var elements = [];
   var id_regex = /(?:#([\w-]+))/;
   var tag_regex = /^(\w+)/;
   var class_regex = /(?:\.([\w-]+))/;
   var match;
-  var previousSelector = selector;
 
+  var selectionHierarchy = selector.split(' ')
+  console.log(selectionHierarchy.splice(0,1));
+  console.log(selectionHierarchy)
+
+  var previousSelector = selector;
   while (selector.length !== 0) {
 
     // #ID

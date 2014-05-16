@@ -1,5 +1,6 @@
 µSelector
 ===
+A tiny javascript css selection engine (~1kB gzipped)
 
 jQuery-like syntax. Select by Tags, Classes and IDs (only) and parent > child relationships.
 

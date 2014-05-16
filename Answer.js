@@ -99,7 +99,6 @@ var $ = function ( selector, context ) {
 
   if (remainingSelector.length !== 0) {
     to_keep = [];
-
     for (var i = 0; i < elements.length; i++) {
       try {
         to_keep.push.apply(to_keep, $(remainingSelector, elements[i]));
@@ -107,7 +106,6 @@ var $ = function ( selector, context ) {
         throw error;
       }
     }
-
     elements = to_keep;
   }
 
